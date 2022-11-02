@@ -5,13 +5,13 @@ VALUES ("Engineering"),
        ("Sales");
 
 INSERT INTO roles (title, salary, department_id)
-VALUES ("Sales Lead", 100000, 800),
-       ("Lead Engineer", 150000, 776),
-       ("Product Engineer", 90000, 776),
-       ("Lawyer", 135000, 400),
-       ("Account Manager", 85000, 500),
-       ("Program Manager", 95000, 500),
-       ("Cloud Developer", 95000, 774);
+VALUES ("Sales Lead", 100000, 4),
+       ("Lead Engineer", 150000, 1),
+       ("Product Engineer", 90000, 1),
+       ("Lawyer", 135000, 3),
+       ("Account Manager", 85000, 2),
+       ("Program Manager", 95000, 2),
+       ("Cloud Developer", 95000, 1);
 
 
 
