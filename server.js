@@ -71,7 +71,8 @@ function viewDepartments() {
 
 function viewEmployees() {
     //setup query to view employee
-    const sql = `SELECT * FROM employee`;
+    const sql = `
+    SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, roles.salary, roles.department_id, department.name FROM employee JOIN roles  ON employee.role_id = roles.id JOIN department ON employee.role_id = department.id`;
     db.query(sql, (err, results) => {
     if (err) {
         res.status(500).json({ error: err.message });
