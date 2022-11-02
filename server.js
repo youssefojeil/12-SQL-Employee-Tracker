@@ -26,17 +26,7 @@ const db = mysql.createConnection(
 
 /*** QUERIES ***/
 /*
-//setup query to view department
-let sql = `SELECT * FROM department`;
-db.query(sql, (err, results) => {
-  if (err) {
-    res.status(500).json({ error: err.message });
-     return;
-  }
-  else {
-    console.table(results);
-  }
-});
+
 
 /*
 connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function (error, results, fields) {
@@ -46,29 +36,7 @@ connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function
   });
 */
 /*
-//setup query to view roles
-sql = `SELECT * FROM roles`;
-db.query(sql, (err, results) => {
-  if (err) {
-    res.status(500).json({ error: err.message });
-     return;
-  }
-  else {
-    console.table(results);
-  }
-});
 
-//setup query to view employee
-sql = `SELECT * FROM employee`;
-db.query(sql, (err, results) => {
-  if (err) {
-    res.status(500).json({ error: err.message });
-     return;
-  }
-  else {
-    console.table(results);
-  }
-});
 */
 const menuQuestions = [
     {
@@ -78,6 +46,7 @@ const menuQuestions = [
         choices: ["View All Employees", 
             "Add Employee", 
             "Update Employee Role",
+            "View All Roles",
             "Add Role",
             "View All Departments",
             "Add Department",
@@ -86,12 +55,55 @@ const menuQuestions = [
     }
 ];
 
+function viewDepartments() {
+    //setup query to view department
+    const sql = `SELECT * FROM department`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+    }
+    else {
+        console.table(results);
+    }
+    });
+}
+
+function viewEmployees() {
+    //setup query to view employee
+    const sql = `SELECT * FROM employee`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+    }
+    else {
+        console.table(results);
+    }
+    });
+}
+
+// job title, role id, department & salary
+function viewRoles() {
+    //setup query to view roles
+    sql = `SELECT  roles.id, roles.title, roles.department_id, department.name, roles.salary FROM roles JOIN department ON roles.department_id = department.id`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+    }
+    else {
+        console.table(results);
+    }
+    });
+}
+
 /*** INQUIRER***/
 function mainMenu() {
     inquirer.prompt(menuQuestions).then((answers) => {
         console.log(answers.menu);
         if(answers.menu === "View All Employees") {
-            //viewEmployees();
+            viewEmployees();
         }
         else if(answers.menu === "Add Employee") {
             //addEmployee();
@@ -103,8 +115,12 @@ function mainMenu() {
             //addRole();
         }
         
+        else if(answers.menu === "View All Roles") {
+            viewRoles();
+        }
+        
         else if(answers.menu === "View All Departments") {
-            //viewDepartments();
+            viewDepartments();
         }
         else if(answers.menu === "Add Department") {
             //addDepartment();
