@@ -60,7 +60,7 @@ function viewDepartments() {
     const sql = `SELECT * FROM department`;
     db.query(sql, (err, results) => {
     if (err) {
-        res.status(500).json({ error: err.message });
+        console.log(err.message);
         return;
     }
     else {
@@ -75,7 +75,7 @@ function viewEmployees() {
     SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, roles.salary, roles.department_id, department.name FROM employee JOIN roles  ON employee.role_id = roles.id JOIN department ON employee.role_id = department.id`;
     db.query(sql, (err, results) => {
     if (err) {
-        res.status(500).json({ error: err.message });
+        console.log(err.message);
         return;
     }
     else {
@@ -90,7 +90,7 @@ function viewRoles() {
     sql = `SELECT  roles.id, roles.title, roles.department_id, department.name, roles.salary FROM roles JOIN department ON roles.department_id = department.id`;
     db.query(sql, (err, results) => {
     if (err) {
-        res.status(500).json({ error: err.message });
+        console.log(err.message);
         return;
     }
     else {
@@ -109,6 +109,17 @@ function addDepartment() {
     ]
     inquirer.prompt(departmentQuestions).then((answer) => {
         console.log(answer.departmentName);
+        const sql = `INSERT INTO department (name) VALUES (?)`
+        const params = answer.departmentName;
+        db.query(sql, params, (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            else {
+                console.table(result);
+            }        
+        })
     });
 }
     
