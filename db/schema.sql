@@ -1,4 +1,4 @@
---delete db if exists & create db--
+-- delete db if exists & create db
 DROP DATABASE IF EXISTS company_db;
 CREATE DATABASE company_db;
 
@@ -10,7 +10,7 @@ CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL,
     PRIMARY KEY(id)
-)
+);
 
 -- Role Table
 CREATE TABLE roles (
@@ -21,7 +21,7 @@ CREATE TABLE roles (
     PRIMARY KEY (id),
     FOREIGN KEY (department_id) REFERENCES department(id)
 
-)
+);
 
 -- Employee Table
 CREATE TABLE employee (
@@ -29,7 +29,7 @@ CREATE TABLE employee (
     first_name VARCHAR(30),
     last_name VARCHAR(30),
     role_id INT,
-    manager_id INT
-    PRIMARY KEY (id)
+    manager_id INT,
+    PRIMARY KEY (id),
     FOREIGN KEY (role_id) REFERENCES roles(id)
-)
+);
