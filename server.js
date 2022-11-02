@@ -99,6 +99,21 @@ function viewRoles() {
     });
 }
 
+function addDepartment() {
+    const departmentQuestions = [
+        {
+            type: "input",
+            name: "departmentName",
+            message: "What is the name of the department?"
+        }
+    ]
+    inquirer.prompt(departmentQuestions).then((answer) => {
+        console.log(answer.departmentName);
+    });
+}
+    
+
+
 /*** INQUIRER***/
 function mainMenu() {
     inquirer.prompt(menuQuestions).then((answers) => {
@@ -124,7 +139,7 @@ function mainMenu() {
             viewDepartments();
         }
         else if(answers.menu === "Add Department") {
-            //addDepartment();
+            addDepartment();
         }
         else{
             return;
