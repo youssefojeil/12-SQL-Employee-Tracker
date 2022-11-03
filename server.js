@@ -22,6 +22,7 @@ const db = mysql.createConnection(
       database: 'company_db'
     },
     console.log(`Connected to the company_db database.`)
+    
   );
 
 /*** QUERIES ***/
@@ -55,16 +56,6 @@ const menuQuestions = [
     }
 ];
 
-const departmentQuestions = [
-    {
-        type: "input",
-        name: "departmentName",
-        message: "What is the name of the department?"
-    }
-];
-
-departments();
-
 const roleQuestions = [
     {
         type: "input",
@@ -83,110 +74,13 @@ const roleQuestions = [
     }
 ];
 
-
-// get current departments from database to use in add role function
-function departments() {
-    //setup query to view departments
-    const sql = `SELECT * FROM department`;
-    db.query(sql, (err, results) => {
-    if (err) {
-        console.log(err.message);
-        return;
+const departmentQuestions = [
+    {
+        type: "input",
+        name: "departmentName",
+        message: "What is the name of the department?"
     }
-    // push individual departments into department_list array
-    else {
-        for(let i = 0; i < results.length; i ++) {
-            department_list.push(results[i].name);
-        }
-    }
-    });
-
-}
-
-function viewDepartments() {
-    //setup query to view department
-    const sql = `SELECT * FROM department`;
-    db.query(sql, (err, results) => {
-    if (err) {
-        console.log(err.message);
-        return;
-    }
-    else {
-        console.log(results);
-        console.table(results);
-    }
-    });
-}
-
-function viewEmployees() {
-    //setup query to view employee
-    const sql = `
-    SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, roles.salary, roles.department_id, department.name FROM employee JOIN roles  ON employee.role_id = roles.id JOIN department ON employee.role_id = department.id`;
-    db.query(sql, (err, results) => {
-    if (err) {
-        console.log(err.message);
-        return;
-    }
-    else {
-        console.table(results);
-    }
-    });
-}
-
-// job title, role id, department & salary
-function viewRoles() {
-    //setup query to view roles
-    sql = `SELECT  roles.id, roles.title, roles.department_id, department.name, roles.salary FROM roles JOIN department ON roles.department_id = department.id`;
-    db.query(sql, (err, results) => {
-    if (err) {
-        console.log(err.message);
-        return;
-    }
-    else {
-        console.table(results);
-    }
-    });
-}
-
-function addDepartment() {
-
-    inquirer.prompt(departmentQuestions).then((answer) => {
-        console.log(answer.departmentName);
-        const sql = `INSERT INTO department (name) VALUES (?)`
-        const params = answer.departmentName;
-        db.query(sql, params, (err, result) => {
-            if (err) {
-                console.log(err.message);
-                return;
-            }
-            else {
-                console.table(result);
-            }        
-        })
-    });
-}
-
-function addRole() {
-    inquirer.prompt(roleQuestions).then((answers) => {
-        console.log(answers.roleName);
-        let salary = parseInt(answers.roleSalary);
-        console.log(salary);
-        console.log(answers.departments);
-        const sql = `INSERT INTO roles (title, salary, department_id) VALUES ?`
-        const params = [answers.roleName, salary];
-        db.query(sql, params, (err, result) => {
-            if (err) {
-                console.log(err.message);
-                return;
-            }
-            else {
-                console.table(result);
-            }        
-             })
-    });
-}
-    
-
+];
 
 /*** INQUIRER***/
 function mainMenu() {
@@ -223,7 +117,122 @@ function mainMenu() {
 
 
 
+
 mainMenu();
+
+departments();
+
+
+
+
+// get current departments from database to use in add role function
+function departments() {
+    //setup query to view departments
+    const sql = `SELECT * FROM department`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        console.log(err.message);
+        return;
+    }
+    // push individual departments into department_list array
+    else {
+        for(let i = 0; i < results.length; i ++) {
+            department_list.push(results[i].name);
+        }
+    }
+    });
+    mainMenu();
+}
+
+function viewDepartments() {
+    //setup query to view department
+    const sql = `SELECT * FROM department`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        console.log(err.message);
+        return;
+    }
+    else {
+        console.log(results);
+        console.table(results);
+    }
+    });
+    mainMenu();
+}
+
+function viewEmployees() {
+    //setup query to view employee
+    const sql = `
+    SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, roles.salary, roles.department_id, department.name FROM employee JOIN roles  ON employee.role_id = roles.id JOIN department ON employee.role_id = department.id`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        console.log(err.message);
+        return;
+    }
+    else {
+        console.table(results);
+    }
+    });
+    mainMenu();
+}
+
+// job title, role id, department & salary
+function viewRoles() {
+    //setup query to view roles
+    sql = `SELECT  roles.id, roles.title, roles.department_id, department.name, roles.salary FROM roles JOIN department ON roles.department_id = department.id`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        console.log(err.message);
+        return;
+    }
+    else {
+        console.table(results);
+    }
+    });
+    mainMenu();
+}
+
+function addDepartment() {
+
+    inquirer.prompt(departmentQuestions).then((answer) => {
+        console.log(answer.departmentName);
+        const sql = `INSERT INTO department (name) VALUES (?)`
+        const params = answer.departmentName;
+        db.query(sql, params, (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            else {
+                console.table(result);
+            }        
+        })
+    });
+    mainMenu();
+}
+
+function addRole() {
+    inquirer.prompt(roleQuestions).then((answers) => {
+        console.log(answers.roleName);
+        let salary = parseInt(answers.roleSalary);
+        console.log(salary);
+        console.log(answers.departments);
+        const sql = `INSERT INTO roles (title, salary, department_id) VALUES ?`
+        const params = [answers.roleName, salary];
+        db.query(sql, params, (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            else {
+                console.table(result);
+            }        
+             })
+    });
+    mainMenu();
+}
+    
+
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
