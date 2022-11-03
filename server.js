@@ -2,7 +2,7 @@
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
-
+let department_list = [];
 // set up port
 const PORT = process.env.PORT || 3000;
 // invoke express
@@ -55,6 +55,54 @@ const menuQuestions = [
     }
 ];
 
+const departmentQuestions = [
+    {
+        type: "input",
+        name: "departmentName",
+        message: "What is the name of the department?"
+    }
+];
+
+departments();
+
+const roleQuestions = [
+    {
+        type: "input",
+        name: "roleName",
+        message: "What is the name of the role?"
+    },
+    {
+        type: "input",
+        name: "roleSalary",
+        message: "What is the salary of the role?"
+    },
+    {
+        type: "list",
+        name: "departments",
+        choices: department_list
+    }
+];
+
+
+// get current departments from database to use in add role function
+function departments() {
+    //setup query to view departments
+    const sql = `SELECT * FROM department`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        console.log(err.message);
+        return;
+    }
+    // push individual departments into department_list array
+    else {
+        for(let i = 0; i < results.length; i ++) {
+            department_list.push(results[i].name);
+        }
+    }
+    });
+
+}
+
 function viewDepartments() {
     //setup query to view department
     const sql = `SELECT * FROM department`;
@@ -64,6 +112,7 @@ function viewDepartments() {
         return;
     }
     else {
+        console.log(results);
         console.table(results);
     }
     });
@@ -100,13 +149,7 @@ function viewRoles() {
 }
 
 function addDepartment() {
-    const departmentQuestions = [
-        {
-            type: "input",
-            name: "departmentName",
-            message: "What is the name of the department?"
-        }
-    ]
+
     inquirer.prompt(departmentQuestions).then((answer) => {
         console.log(answer.departmentName);
         const sql = `INSERT INTO department (name) VALUES (?)`
@@ -120,6 +163,26 @@ function addDepartment() {
                 console.table(result);
             }        
         })
+    });
+}
+
+function addRole() {
+    inquirer.prompt(roleQuestions).then((answers) => {
+        console.log(answers.roleName);
+        let salary = parseInt(answers.roleSalary);
+        console.log(salary);
+        console.log(answers.departments);
+        const sql = `INSERT INTO roles (title, salary, department_id) VALUES ?`
+        const params = [answers.roleName, salary];
+        db.query(sql, params, (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+            else {
+                console.table(result);
+            }        
+             })
     });
 }
     
@@ -139,7 +202,7 @@ function mainMenu() {
             //updateEmployeeRole();
         }
         else if(answers.menu === "Add Role") {
-            //addRole();
+            addRole();
         }
         
         else if(answers.menu === "View All Roles") {
@@ -157,6 +220,8 @@ function mainMenu() {
         }
     });    
 }
+
+
 
 mainMenu();
 
