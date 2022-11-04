@@ -67,7 +67,7 @@ const roleQuestions = [
     {
         type: "list",
         name: "departments",
-        choices: departmentsList()
+        choices: depListArr
     }
 ];
 
@@ -96,7 +96,7 @@ const employeeQuestions = [
         type: "list",
         name: "roles",
         message: "What is the employee's role?",
-        choices: rolesList()
+        choices: roleListArr
     }
 
 ];
@@ -113,7 +113,7 @@ const updateEmployeeQuestions = [
         type: "list",
         name: "roles",
         message: "Which role do you want to assign the selected employee?",
-        choices: rolesList()
+        choices: roleListArr
     }
 ];
 
@@ -165,10 +165,8 @@ function departmentsList() {
         for(let i = 0; i < results.length; i ++) {
             depListArr.push(results[i].name);
         }
-        
     }
     });
-    return depListArr;
 }
 
 // get current employees from database to use in update employee function
@@ -214,7 +212,7 @@ function viewDepartments() {
 function viewEmployees() {
     //setup query to view employees
     const sql = `
-    SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, roles.salary, roles.department_id, department.name FROM employee JOIN roles  ON employee.role_id = roles.id JOIN department ON employee.role_id = department.id`;
+    SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, roles.salary, roles.department_id, department.name FROM employee JOIN roles  ON roles.id = employee.role_id JOIN department ON roles.department_id = department.id`;
     db.query(sql, (err, results) => {
     if (err) {
         console.log(err.message);
@@ -245,10 +243,9 @@ function rolesList() {
         for(let i = 0; i < results.length; i ++) {
             roleListArr.push(results[i].title);
         }
-        
     }
     });
-    return roleListArr;
+
 }
 
 // View roles function
@@ -326,26 +323,29 @@ function updateEmployeeRole() {
     let roleID = 0;
     let employeeID = 0;
     //employeesList();
+    rolesList();
     
     inquirer.prompt(updateEmployeeQuestions).then((answers) => {
         
         //log results from user input
         console.log(employeeListArr);
         console.log(answers.employees);
+        console.log("This is answers.role")
         console.log(answers.roles);
 
         // split the employee name into first & last name
         let fullName = answers.employees.split(" ");
-        console.log(fullName);
         let fName = fullName[0];
         let lName = fullName[1];
 
+        console.log(roleListArr);
 
         //get role id by looping through list of roles
         for(let i = 0; i < roleListArr.length; i ++) {
             // if the answer matches any of the roles in list
                 // role id = index + 1 of role in list
              if(roleListArr[i] === answers.roles) {
+                console.log("roleListArr");
                 console.log(roleListArr[i]);
                 console.log(answers.roles);
                 roleID = i + 1;
@@ -370,19 +370,14 @@ function updateEmployeeRole() {
         console.log(`Employee ID: ${employeeID}`);
         console.log(`Role ID: ${roleID}`);
 
-        const sql = `UPDATE employee SET role_id = ? WHERE id = ?`
-        const params = {
-                        role_id: roleID
-                    };
-        console.log(params);
-        db.query(sql, [roleID, employeeID], (err, result) => {
+        db.query(`UPDATE employee SET role_id = ${roleID} WHERE id = ${employeeID}`,  function (err, result) {
             if (err) {
                 console.log(err.message);
                 mainMenu();
             }
             else {
-                //console.table(results);
-                printTable(results);
+                console.log(`${answers.employees} role updated to ${answers.role}`);
+                //printTable(result);
                 // reset department list to empty array 
                 roleListArr = []
                 // call main menu
