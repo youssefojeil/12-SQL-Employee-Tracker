@@ -128,7 +128,7 @@ function viewDepartments() {
     db.query(sql, (err, results) => {
     if (err) {
         console.log(err.message);
-        return;
+        mainMenu();
     }
     else {
         console.table(results);
@@ -145,7 +145,7 @@ function viewEmployees() {
     db.query(sql, (err, results) => {
     if (err) {
         console.log(err.message);
-        return;
+        mainMenu();
     }
     else {
         console.table(results);
