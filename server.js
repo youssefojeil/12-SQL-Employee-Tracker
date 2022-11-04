@@ -25,20 +25,7 @@ const db = mysql.createConnection(
     
   );
 
-/*** QUERIES ***/
-/*
 
-
-/*
-connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function (error, results, fields) {
-    // error will be an Error if one occurred during the query
-    // results will contain the results of the query
-    // fields will contain information about the returned results fields (if any)
-  });
-*/
-/*
-
-*/
 const menuQuestions = [
     {
         type: "list",
@@ -114,9 +101,6 @@ function mainMenu() {
         }
     });    
 }
-
-
-
 
 
 // get current departments from database to use in add role function
@@ -211,13 +195,34 @@ function addDepartment() {
 function addRole() {
     //get list of current departments
     departmentsList();
+    // set depID index = 1
+    let depID = 0;
     inquirer.prompt(roleQuestions).then((answers) => {
+        //log results from input
         console.log(answers.roleName);
         let salary = parseInt(answers.roleSalary);
         console.log(salary);
         console.log(answers.departments);
-        const sql = `INSERT INTO roles (title, salary, department_id) VALUES ?`
-        const params = [answers.roleName, salary];
+        console.log(department_list);
+
+        //get department id by looping through list of dep
+        for(let i = 0; i < department_list.length; i ++) {
+            // if the answer matches any of the departments in list
+                // dep id = index + 1 of department in list
+             if(department_list[i] === answers.departments) {
+                console.log(department_list[i]);
+                console.log(answers.departments);
+                depID = i + 1;
+                console.log(depID);
+             }
+        }
+
+        const sql = `INSERT INTO roles SET ?`
+        const params = {title: answers.roleName, 
+                        salary: salary,
+                        department_id: depID
+                    };
+        console.log(params);
         db.query(sql, params, (err, result) => {
             if (err) {
                 console.log(err.message);
@@ -225,6 +230,9 @@ function addRole() {
             }
             else {
                 console.table(result);
+                // reset department list to empty array 
+                department_list = []
+                // call main menu
                 mainMenu();
             }        
         });
