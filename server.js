@@ -34,6 +34,7 @@ const db = mysql.createConnection(
   );
 
 
+// main menu questions
 const menuQuestions = [
     {
         type: "list",
@@ -51,6 +52,7 @@ const menuQuestions = [
     }
 ];
 
+// add new role questions
 const roleQuestions = [
     {
         type: "input",
@@ -65,10 +67,11 @@ const roleQuestions = [
     {
         type: "list",
         name: "departments",
-        choices: depListArr
+        choices: departmentsList()
     }
 ];
 
+// add new department questions
 const departmentQuestions = [
     {
         type: "input",
@@ -77,7 +80,7 @@ const departmentQuestions = [
     }
 ];
 
-
+// add new employee questions
 const employeeQuestions = [
     {
         type: "input",
@@ -93,12 +96,12 @@ const employeeQuestions = [
         type: "list",
         name: "roles",
         message: "What is the employee's role?",
-        choices: roleListArr
+        choices: rolesList()
     }
 
 ];
 
-
+// update current employee questions
 const updateEmployeeQuestions = [
     {
         type: "list",
@@ -162,9 +165,10 @@ function departmentsList() {
         for(let i = 0; i < results.length; i ++) {
             depListArr.push(results[i].name);
         }
-        return depListArr;
+        
     }
     });
+    return depListArr;
 }
 
 // get current employees from database to use in update employee function
