@@ -307,6 +307,7 @@ function addEmployee() {
                 mainMenu();
             }
             else {
+                console.log(`Added ${answers.fName, answers.lName} to employees`)
                 console.table(result);
                 // reset department list to empty array 
                 roleListArr = []
@@ -395,7 +396,6 @@ function updateEmployeeRole() {
 // Add department function
 function addDepartment() {
     inquirer.prompt(departmentQuestions).then((answer) => {
-        console.log(answer.departmentName);
         const sql = `INSERT INTO department (name) VALUES (?)`
         const params = answer.departmentName;
         db.query(sql, params, (err, result) => {
@@ -405,7 +405,7 @@ function addDepartment() {
             }
             // log results on success 
             else {
-                console.table(result);
+                console.log(`Added ${answer.departmentName} to departments`)
                 mainMenu();
             }        
         })
