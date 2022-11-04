@@ -2,7 +2,7 @@
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
-const e = require("express");
+
 
 // global vars
 let depListArr = [];
@@ -75,6 +75,7 @@ const departmentQuestions = [
     }
 ];
 
+
 const employeeQuestions = [
     {
         type: "input",
@@ -91,24 +92,25 @@ const employeeQuestions = [
         name: "roles",
         message: "What is the employee's role?",
         choices: roleListArr
-    },
+    }
 
-]
+];
+
 
 const updateEmployeeQuestions = [
     {
         type: "list",
         name: "employees",
         message: "Which employee's role do you want to update?",
-        choices: employeeListArr
+        choices: employeesList()
     },
     {
         type: "list",
         name: "roles",
-        message: "Which role do you want to assign the seleceted employee?",
-        choices: roleListArr
-    },
-]
+        message: "Which role do you want to assign the selected employee?",
+        choices: rolesList()
+    }
+];
 
 /*** MAIN INQUIRER***/
 function mainMenu() {
@@ -173,14 +175,15 @@ function employeesList() {
         console.log(err.message);
         return;
     }
-    // push individual departments into depListArr array
+    // push individual employees into employeeListArr array
     else {
         for(let i = 0; i < results.length; i ++) {
             employeeListArr.push(results[i].first_name + ' ' + results[i].last_name);
         }
-        return employeeListArr;
+        
     }
     });
+    return employeeListArr;
 }
 
 // view all departments function
@@ -234,9 +237,10 @@ function rolesList() {
         for(let i = 0; i < results.length; i ++) {
             roleListArr.push(results[i].title);
         }
-        return roleListArr;
+        
     }
     });
+    return roleListArr;
 }
 
 // View roles function
@@ -255,60 +259,6 @@ function viewRoles() {
     }
     });
    
-}
-
-// update employee role function
-function updateEmployeeRole() {
-    // get current list of employees
-    employeesList();
-    let roleID = 0;
-    inquirer.prompt(updateEmployeeQuestions).then((answers) => {
-        
-        //log results from user input
-        console.log(employeeListArr);
-        console.log(answers.employee);
-        console.log(answers.roles);
-
-        // split the employee name into first & last name
-        let fullName = answers.employee.split(" ");
-        console.log(fullName);
-        let fName = fullName[0];
-        let lName = fullName[1];
-        console.log(fName);
-        console.log(lName);
-
-        //get role id by looping through list of dep
-        for(let i = 0; i < roleListArr.length; i ++) {
-            // if the answer matches any of the roles in list
-                // role id = index + 1 of role in list
-             if(roleListArr[i] === answers.roles) {
-                console.log(roleListArr[i]);
-                console.log(answers.roles);
-                roleID = i + 1;
-                console.log(roleID);
-             }
-        }
-
-        const sql = `INSERT INTO employee SET ?`
-        const params = {first_name: answers.fName, 
-                        last_name: answers.lName,
-                        role_id: roleID
-                    };
-        console.log(params);
-        db.query(sql, params, (err, result) => {
-            if (err) {
-                console.log(err.message);
-                mainMenu();
-            }
-            else {
-                console.table(result);
-                // reset department list to empty array 
-                roleListArr = []
-                // call main menu
-                mainMenu();
-            }        
-        });
-    });
 }
 
 // Add Employee function
@@ -358,6 +308,79 @@ function addEmployee() {
     });
 
 }
+
+
+// update employee role function
+function updateEmployeeRole() {
+    // get current list of employees
+    let roleID = 0;
+    let employeeID = 0;
+    //employeesList();
+    
+    inquirer.prompt(updateEmployeeQuestions).then((answers) => {
+        
+        //log results from user input
+        console.log(employeeListArr);
+        console.log(answers.employees);
+        console.log(answers.roles);
+
+        // split the employee name into first & last name
+        let fullName = answers.employees.split(" ");
+        console.log(fullName);
+        let fName = fullName[0];
+        let lName = fullName[1];
+
+
+        //get role id by looping through list of roles
+        for(let i = 0; i < roleListArr.length; i ++) {
+            // if the answer matches any of the roles in list
+                // role id = index + 1 of role in list
+             if(roleListArr[i] === answers.roles) {
+                console.log(roleListArr[i]);
+                console.log(answers.roles);
+                roleID = i + 1;
+                console.log(roleID);
+             }
+        }
+
+        // get employee id by looping through the list of employees
+        for(let i = 0; i < employeeListArr.length; i ++) {
+            // if the answer matches any of the roles in list
+                // role id = index + 1 of role in list
+             if(employeeListArr[i] === answers.employees) {
+                console.log(employeeListArr[i]);
+                console.log(answers.employees);
+                employeeID = i + 1;
+                console.log(employeeID);
+             }
+        }
+        // update role id based off employee id
+        console.log(`First name: ${fName}`);
+        console.log(`Last Name: ${lName}`);
+        console.log(`Employee ID: ${employeeID}`);
+        console.log(`Role ID: ${roleID}`);
+
+        const sql = `UPDATE employee SET role_id = ? WHERE id = ?`
+        const params = {
+                        role_id: roleID
+                    };
+        console.log(params);
+        db.query(sql, [roleID, employeeID], (err, result) => {
+            if (err) {
+                console.log(err.message);
+                mainMenu();
+            }
+            else {
+                console.table(result);
+                // reset department list to empty array 
+                roleListArr = []
+                // call main menu
+                mainMenu();
+            }        
+        });
+    });
+}
+
 
 // Add department function
 function addDepartment() {
