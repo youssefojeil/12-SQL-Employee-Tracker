@@ -2,6 +2,8 @@
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
+const { printTable } = require('console-table-printer');
+
 
 
 // global vars
@@ -141,7 +143,7 @@ function mainMenu() {
         else{
             return;
         }
-    });    
+    });
 }
 
 
@@ -196,7 +198,8 @@ function viewDepartments() {
         mainMenu();
     }
     else {
-        console.table(results);
+        //console.table(results);
+        printTable(results);
         mainMenu();
     }
     });
@@ -215,7 +218,8 @@ function viewEmployees() {
     }
     // log results on success
     else {
-        console.table(results);
+        //console.table(results);
+        printTable(results);
         mainMenu();
     }
     });
@@ -254,7 +258,8 @@ function viewRoles() {
     }
     // log results on success
     else {
-        console.table(results);
+        //console.table(results);
+        printTable(results);
         mainMenu();
     }
     });
@@ -371,7 +376,8 @@ function updateEmployeeRole() {
                 mainMenu();
             }
             else {
-                console.table(result);
+                //console.table(results);
+                printTable(results);
                 // reset department list to empty array 
                 roleListArr = []
                 // call main menu
