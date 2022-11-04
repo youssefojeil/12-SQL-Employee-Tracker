@@ -365,10 +365,6 @@ function updateEmployeeRole() {
              }
         }
         // update role id based off employee id
-        console.log(`First name: ${fName}`);
-        console.log(`Last Name: ${lName}`);
-        console.log(`Employee ID: ${employeeID}`);
-        console.log(`Role ID: ${roleID}`);
 
         db.query(`UPDATE employee SET role_id = ${roleID} WHERE id = ${employeeID}`,  function (err, result) {
             if (err) {
@@ -376,8 +372,7 @@ function updateEmployeeRole() {
                 mainMenu();
             }
             else {
-                console.log(`${answers.employees} role updated to ${answers.role}`);
-                //printTable(result);
+                console.log(`${answers.employees} role updated to ${answers.roles}`);
                 // reset department list to empty array 
                 roleListArr = []
                 // call main menu
@@ -418,9 +413,7 @@ function addRole() {
         //log results from input
         console.log(answers.roleName);
         let salary = parseInt(answers.roleSalary);
-        console.log(salary);
-        console.log(answers.departments);
-        console.log(depListArr);
+
 
         //get department id by looping through list of dep
         for(let i = 0; i < depListArr.length; i ++) {
@@ -446,6 +439,7 @@ function addRole() {
                 mainMenu();
             }
             else {
+                console.log(`Added ${answers.roleName} to department ${answers.departments}`)
                 console.table(result);
                 // reset department list to empty array 
                 depListArr = []
