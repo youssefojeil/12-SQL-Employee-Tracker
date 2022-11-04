@@ -2,10 +2,12 @@
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
+const e = require("express");
 
 // global vars
 let depListArr = [];
 let roleListArr = [];
+let employeeListArr = [];
 
 // set up port
 const PORT = process.env.PORT || 3000;
@@ -93,6 +95,21 @@ const employeeQuestions = [
 
 ]
 
+const updateEmployeeQuestions = [
+    {
+        type: "list",
+        name: "employees",
+        message: "Which employee's role do you want to update?",
+        choices: employeeListArr
+    },
+    {
+        type: "list",
+        name: "roles",
+        message: "Which role do you want to assign the seleceted employee?",
+        choices: roleListArr
+    },
+]
+
 /*** MAIN INQUIRER***/
 function mainMenu() {
     inquirer.prompt(menuQuestions).then((answers) => {
@@ -103,7 +120,7 @@ function mainMenu() {
             addEmployee();
         }
         else if(answers.menu === "Update Employee Role") {
-            //updateEmployeeRole();
+            updateEmployeeRole();
         }
         else if(answers.menu === "Add Role") {
             addRole();
@@ -142,6 +159,26 @@ function departmentsList() {
             depListArr.push(results[i].name);
         }
         return depListArr;
+    }
+    });
+}
+
+// get current employees from database to use in update employee function
+// helper function for addrole function
+function employeesList() {
+    //setup query to view departments
+    const sql = `SELECT * FROM employee`;
+    db.query(sql, (err, results) => {
+    if (err) {
+        console.log(err.message);
+        return;
+    }
+    // push individual departments into depListArr array
+    else {
+        for(let i = 0; i < results.length; i ++) {
+            employeeListArr.push(results[i].first_name + ' ' + results[i].last_name);
+        }
+        return employeeListArr;
     }
     });
 }
@@ -218,6 +255,60 @@ function viewRoles() {
     }
     });
    
+}
+
+// update employee role function
+function updateEmployeeRole() {
+    // get current list of employees
+    employeesList();
+    let roleID = 0;
+    inquirer.prompt(updateEmployeeQuestions).then((answers) => {
+        
+        //log results from user input
+        console.log(employeeListArr);
+        console.log(answers.employee);
+        console.log(answers.roles);
+
+        // split the employee name into first & last name
+        let fullName = answers.employee.split(" ");
+        console.log(fullName);
+        let fName = fullName[0];
+        let lName = fullName[1];
+        console.log(fName);
+        console.log(lName);
+
+        //get role id by looping through list of dep
+        for(let i = 0; i < roleListArr.length; i ++) {
+            // if the answer matches any of the roles in list
+                // role id = index + 1 of role in list
+             if(roleListArr[i] === answers.roles) {
+                console.log(roleListArr[i]);
+                console.log(answers.roles);
+                roleID = i + 1;
+                console.log(roleID);
+             }
+        }
+
+        const sql = `INSERT INTO employee SET ?`
+        const params = {first_name: answers.fName, 
+                        last_name: answers.lName,
+                        role_id: roleID
+                    };
+        console.log(params);
+        db.query(sql, params, (err, result) => {
+            if (err) {
+                console.log(err.message);
+                mainMenu();
+            }
+            else {
+                console.table(result);
+                // reset department list to empty array 
+                roleListArr = []
+                // call main menu
+                mainMenu();
+            }        
+        });
+    });
 }
 
 // Add Employee function
