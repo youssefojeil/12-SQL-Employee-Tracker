@@ -118,15 +118,9 @@ function mainMenu() {
 
 
 
-mainMenu();
-
-departments();
-
-
-
 
 // get current departments from database to use in add role function
-function departments() {
+function departmentsList() {
     //setup query to view departments
     const sql = `SELECT * FROM department`;
     db.query(sql, (err, results) => {
@@ -139,9 +133,9 @@ function departments() {
         for(let i = 0; i < results.length; i ++) {
             department_list.push(results[i].name);
         }
+        return department_list;
     }
     });
-    mainMenu();
 }
 
 function viewDepartments() {
@@ -153,11 +147,11 @@ function viewDepartments() {
         return;
     }
     else {
-        console.log(results);
         console.table(results);
+        mainMenu();
     }
     });
-    mainMenu();
+    
 }
 
 function viewEmployees() {
@@ -171,9 +165,10 @@ function viewEmployees() {
     }
     else {
         console.table(results);
+        mainMenu();
     }
     });
-    mainMenu();
+    
 }
 
 // job title, role id, department & salary
@@ -187,9 +182,10 @@ function viewRoles() {
     }
     else {
         console.table(results);
+        mainMenu();
     }
     });
-    mainMenu();
+   
 }
 
 function addDepartment() {
@@ -205,13 +201,16 @@ function addDepartment() {
             }
             else {
                 console.table(result);
+                mainMenu();
             }        
         })
     });
-    mainMenu();
+   
 }
 
 function addRole() {
+    //get list of current departments
+    departmentsList();
     inquirer.prompt(roleQuestions).then((answers) => {
         console.log(answers.roleName);
         let salary = parseInt(answers.roleSalary);
@@ -222,16 +221,20 @@ function addRole() {
         db.query(sql, params, (err, result) => {
             if (err) {
                 console.log(err.message);
-                return;
+                mainMenu();
             }
             else {
                 console.table(result);
+                mainMenu();
             }        
-             })
+        });
     });
-    mainMenu();
+    
 }
     
+
+mainMenu();
+
 
 
 app.listen(PORT, () => {
